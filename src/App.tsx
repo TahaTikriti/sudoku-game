@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import SudokuBoard from "./components/SudokuBoard";
 import { isValidBoard } from "./logic/validation";
 import { generateSudokuPuzzle } from "./logic/puzzleGenerator";
+import { solveSudoku } from "./logic/solver";
 
 const App: React.FC = () => {
   const [board, setBoard] = useState<number[][]>(
@@ -20,6 +21,11 @@ const App: React.FC = () => {
         : r
     );
     setBoard(newBoard);
+  };
+  const solveBoard = () => {
+    const boardCopy = [...board];
+    solveSudoku(boardCopy); // Solve the board using the backtracking algorithm
+    setBoard(boardCopy); // Update the board with the solved values
   };
 
   const handleCheckSolution = () => {
@@ -66,7 +72,11 @@ const App: React.FC = () => {
         {isValid ? "Solution is correct!" : "Solution is incorrect!"}
       </div>
 
-      <SudokuBoard board={board} handleChange={handleChange} />
+      <SudokuBoard
+        board={board}
+        handleChange={handleChange}
+        solveBoard={solveBoard}
+      />
     </div>
   );
 };
