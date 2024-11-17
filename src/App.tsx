@@ -12,6 +12,7 @@ const App: React.FC = () => {
   const [difficulty, setDifficulty] = useState<string>("easy");
   const [isValid, setIsValid] = useState<boolean>(true);
 
+
   const handleChange = (row: number, col: number, value: string) => {
     const newBoard = board.map((r, rowIndex) =>
       rowIndex === row
