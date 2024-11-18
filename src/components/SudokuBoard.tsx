@@ -1,6 +1,6 @@
-// components/SudokuBoard.tsx
 import React, { useState, useEffect } from "react";
 import Cell from "./Cell";
+import { handleHint } from "../logic/hintLogic";
 
 interface SudokuBoardProps {
   board: number[][];
@@ -66,58 +66,6 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
     setConflicts(conflictMatrix);
   }, [board]);
 
-  // Function to get a valid hint value
-  const getValidHintValue = (row: number, col: number): number | null => {
-    const usedValues = new Set<number>();
-
-    // Check the row
-    for (let i = 0; i < 9; i++) {
-      if (board[row][i] !== 0) usedValues.add(board[row][i]);
-    }
-
-    // Check the column
-    for (let i = 0; i < 9; i++) {
-      if (board[i][col] !== 0) usedValues.add(board[i][col]);
-    }
-
-    // Check the 3x3 grid
-    const gridRow = Math.floor(row / 3) * 3;
-    const gridCol = Math.floor(col / 3) * 3;
-    for (let i = gridRow; i < gridRow + 3; i++) {
-      for (let j = gridCol; j < gridCol + 3; j++) {
-        if (board[i][j] !== 0) usedValues.add(board[i][j]);
-      }
-    }
-
-    // Find the first valid number that isn't used in the row, column, or grid
-    for (let num = 1; num <= 9; num++) {
-      if (!usedValues.has(num)) {
-        return num;
-      }
-    }
-
-    return null; // No valid number found, though this shouldn't happen
-  };
-
-  // Function to handle hint action
-  const handleHint = () => {
-    if (hintsLeft > 0) {
-      // Find the first empty cell
-      for (let row = 0; row < 9; row++) {
-        for (let col = 0; col < 9; col++) {
-          if (board[row][col] === 0) {
-            const validHint = getValidHintValue(row, col);
-            if (validHint !== null) {
-              setHintCell({ row, col, value: validHint }); // Set the hint cell with value
-              setHintsLeft(hintsLeft - 1);
-              return;
-            }
-          }
-        }
-      }
-    }
-  };
-
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-9 gap-0 p-4">
@@ -150,7 +98,9 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
         </button>
 
         <button
-          onClick={handleHint}
+          onClick={() =>
+            handleHint(board, hintsLeft, setHintCell, setHintsLeft)
+          }
           className="px-6 py-2 text-white bg-yellow-500 rounded hover:bg-yellow-700"
           disabled={hintsLeft === 0}
         >

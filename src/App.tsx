@@ -1,42 +1,43 @@
-// App.tsx
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import SudokuBoard from "./components/SudokuBoard";
 import { isValidBoard } from "./logic/validation";
 import { generateSudokuPuzzle } from "./logic/puzzleGenerator";
 import { solveSudoku } from "./logic/solver";
 
 const App: React.FC = () => {
-  const [board, setBoard] = useState<number[][]>(
-    Array(9).fill(Array(9).fill(0))
-  );
+  const initializeBoard = () => Array(9).fill(Array(9).fill(0));
+  const [board, setBoard] = useState<number[][]>(initializeBoard);
   const [difficulty, setDifficulty] = useState<string>("easy");
   const [isValid, setIsValid] = useState<boolean>(true);
 
+  const handleChange = useCallback(
+    (row: number, col: number, value: string) => {
+      const newBoard = board.map((r, rowIndex) =>
+        rowIndex === row
+          ? r.map((cell, colIndex) =>
+              colIndex === col ? (value ? parseInt(value) : 0) : cell
+            )
+          : r
+      );
+      setBoard(newBoard);
+    },
+    [board]
+  );
 
-  const handleChange = (row: number, col: number, value: string) => {
-    const newBoard = board.map((r, rowIndex) =>
-      rowIndex === row
-        ? r.map((cell, colIndex) =>
-            colIndex === col ? (value ? parseInt(value) : 0) : cell
-          )
-        : r
-    );
-    setBoard(newBoard);
-  };
-  const solveBoard = () => {
+  const solveBoard = useCallback(() => {
     const boardCopy = [...board];
-    solveSudoku(boardCopy); // Solve the board using the backtracking algorithm
-    setBoard(boardCopy); // Update the board with the solved values
-  };
+    solveSudoku(boardCopy);
+    setBoard(boardCopy);
+  }, [board]);
 
-  const handleCheckSolution = () => {
+  const handleCheckSolution = useCallback(() => {
     setIsValid(isValidBoard(board));
-  };
+  }, [board]);
 
-  const handleGeneratePuzzle = () => {
+  const handleGeneratePuzzle = useCallback(() => {
     const generatedBoard = generateSudokuPuzzle(difficulty);
     setBoard(generatedBoard);
-  };
+  }, [difficulty]);
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen">
