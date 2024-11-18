@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Cell from "./Cell";
 import { handleHint } from "../logic/hintLogic";
 
@@ -22,6 +22,7 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
     col: number;
     value: number;
   } | null>(null); // Store the hint cell and its value
+  const initialBoard = useRef<number[][]>(board); // Track the initial board state
 
   useEffect(() => {
     const conflictMatrix: boolean[][] = Array(9)
@@ -84,6 +85,7 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
                   ? hintCell.value
                   : undefined
               } // Display the hint value
+              editable={initialBoard.current[rowIndex][colIndex] === 0} // Set the cell as editable if it was initially empty
             />
           ))
         )}

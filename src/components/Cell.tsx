@@ -1,6 +1,6 @@
 import React from "react";
 
-interface CellProps {
+const Cell: React.FC<{
   row: number;
   col: number;
   value: number;
@@ -8,9 +8,8 @@ interface CellProps {
   handleChange: (row: number, col: number, value: string) => void;
   isHint: boolean;
   hintValue?: number;
-}
-
-const Cell: React.FC<CellProps> = ({
+  editable: boolean;
+}> = ({
   row,
   col,
   value,
@@ -18,6 +17,7 @@ const Cell: React.FC<CellProps> = ({
   handleChange,
   isHint,
   hintValue,
+  editable,
 }) => {
   const getBorderClass = () => {
     let borderClass = "border border-gray-400";
@@ -34,14 +34,15 @@ const Cell: React.FC<CellProps> = ({
       min="1"
       max="9"
       value={isHint ? hintValue || "" : value || ""}
-      onChange={(e) => handleChange(row, col, e.target.value)}
+      onChange={(e) => editable && handleChange(row, col, e.target.value)} // Conditionally call handleChange on change
       className={`w-14 h-14 text-center
         ${conflict ? "bg-red-500" : value ? "bg-gray-300" : "bg-white"}
         focus:outline-none
         ${getBorderClass()}
         ${isHint ? "bg-yellow-200 transition-all duration-300 ease-in-out" : ""}
       `}
-      onClick={() => handleChange(row, col, "")}
+      disabled={!editable} // Conditionally set the disabled attribute
+      readOnly={!editable} // Conditionally set the readOnly attribute
     />
   );
 };
