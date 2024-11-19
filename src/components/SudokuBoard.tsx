@@ -48,7 +48,7 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
                   ? hintCell.value
                   : undefined
               }
-              editable={initialBoard[rowIndex][colIndex] === 0} // Only allow editing if initial value is 0
+              editable={initialBoard[rowIndex][colIndex] === 0}
             />
           ))
         )}

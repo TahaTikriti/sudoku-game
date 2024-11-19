@@ -19,10 +19,25 @@ const Cell: React.FC<{
 }) => {
   const getBorderClass = () => {
     let borderClass = "border border-gray-400";
-    if (row % 3 === 0 && row !== 0) borderClass += " border-t-4 border-t-black";
-    if (col % 3 === 0 && col !== 0) borderClass += " border-l-4 border-l-black";
-    if (row === 8) borderClass += " border-b";
-    if (col === 8) borderClass += " border-r";
+
+    // Apply thicker borders for the 3x3 grid
+    if (row % 3 === 0) {
+      borderClass += " border-t-4 border-t-black"; // Top border for the first row of each 3x3 grid
+    }
+    if (col % 3 === 0) {
+      borderClass += " border-l-4 border-l-black"; // Left border for the first column of each 3x3 grid
+    }
+
+    // Add bottom border for the last row of each 3x3 grid
+    if (row === 8) {
+      borderClass += " border-b-4 border-b-black"; // Bottom border for the last row
+    }
+
+    // Add right border for the last column of each 3x3 grid
+    if (col === 8) {
+      borderClass += " border-r-4 border-r-black"; // Right border for the last column
+    }
+
     return borderClass;
   };
 
