@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Cell from "./Cell";
+import { getConflictMatrix } from "../logic/conflictChecker";
 import { handleHint } from "../logic/hintLogic";
 
 interface SudokuBoardProps {
@@ -16,55 +17,16 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
   const [conflicts, setConflicts] = useState<boolean[][]>(
     Array(9).fill(Array(9).fill(false))
   );
-  const [hintsLeft, setHintsLeft] = useState<number>(3); // Track the number of hints available
+  const [hintsLeft, setHintsLeft] = useState<number>(3);
   const [hintCell, setHintCell] = useState<{
     row: number;
     col: number;
     value: number;
-  } | null>(null); // Store the hint cell and its value
-  const initialBoard = useRef<number[][]>(board); // Track the initial board state
+  } | null>(null);
+  const initialBoard = useRef<number[][]>(board);
 
   useEffect(() => {
-    const conflictMatrix: boolean[][] = Array(9)
-      .fill(null)
-      .map(() => Array(9).fill(false));
-
-    // Check for conflicts
-    for (let row = 0; row < 9; row++) {
-      for (let col = 0; col < 9; col++) {
-        if (board[row][col] === 0) continue;
-
-        // Check row conflicts
-        for (let i = 0; i < 9; i++) {
-          if (i !== col && board[row][i] === board[row][col]) {
-            conflictMatrix[row][col] = true;
-            conflictMatrix[row][i] = true;
-          }
-        }
-
-        // Check column conflicts
-        for (let i = 0; i < 9; i++) {
-          if (i !== row && board[i][col] === board[row][col]) {
-            conflictMatrix[row][col] = true;
-            conflictMatrix[i][col] = true;
-          }
-        }
-
-        // Check 3x3 grid conflicts
-        const gridRow = Math.floor(row / 3) * 3;
-        const gridCol = Math.floor(col / 3) * 3;
-        for (let i = gridRow; i < gridRow + 3; i++) {
-          for (let j = gridCol; j < gridCol + 3; j++) {
-            if ((i !== row || j !== col) && board[i][j] === board[row][col]) {
-              conflictMatrix[row][col] = true;
-              conflictMatrix[i][j] = true;
-            }
-          }
-        }
-      }
-    }
-
-    setConflicts(conflictMatrix);
+    setConflicts(getConflictMatrix(board));
   }, [board]);
 
   return (
@@ -77,15 +39,15 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
               row={rowIndex}
               col={colIndex}
               value={cell}
-              conflict={conflicts[rowIndex][colIndex]} // Keep conflict highlighting
+              conflict={conflicts[rowIndex][colIndex]}
               handleChange={handleChange}
-              isHint={hintCell?.row === rowIndex && hintCell?.col === colIndex} // Highlight if it's a hint
+              isHint={hintCell?.row === rowIndex && hintCell?.col === colIndex}
               hintValue={
                 hintCell?.row === rowIndex && hintCell?.col === colIndex
                   ? hintCell.value
                   : undefined
-              } // Display the hint value
-              editable={initialBoard.current[rowIndex][colIndex] === 0} // Set the cell as editable if it was initially empty
+              }
+              editable={initialBoard.current[rowIndex][colIndex] === 0}
             />
           ))
         )}
