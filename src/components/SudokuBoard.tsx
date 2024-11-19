@@ -1,18 +1,20 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Cell from "./Cell";
 import { getConflictMatrix } from "../logic/conflictChecker";
 import { handleHint } from "../logic/hintLogic";
 
 interface SudokuBoardProps {
-  board: number[][];
+  board: number[][]; // Current state of the board
   handleChange: (row: number, col: number, value: string) => void;
   solveBoard: () => void;
+  initialBoard: number[][]; // Store initial, uneditable values
 }
 
 const SudokuBoard: React.FC<SudokuBoardProps> = ({
   board,
   handleChange,
   solveBoard,
+  initialBoard,
 }) => {
   const [conflicts, setConflicts] = useState<boolean[][]>(
     Array(9).fill(Array(9).fill(false))
@@ -23,7 +25,6 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
     col: number;
     value: number;
   } | null>(null);
-  const initialBoard = useRef<number[][]>(board);
 
   useEffect(() => {
     setConflicts(getConflictMatrix(board));
@@ -47,7 +48,7 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
                   ? hintCell.value
                   : undefined
               }
-              editable={initialBoard.current[rowIndex][colIndex] === 0}
+              editable={initialBoard[rowIndex][colIndex] === 0} // Only allow editing if initial value is 0
             />
           ))
         )}

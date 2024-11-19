@@ -1,5 +1,3 @@
-import React from "react";
-
 const Cell: React.FC<{
   row: number;
   col: number;
@@ -34,17 +32,21 @@ const Cell: React.FC<{
       min="1"
       max="9"
       value={isHint ? hintValue || "" : value || ""}
-      onChange={(e) => editable && handleChange(row, col, e.target.value)} // Conditionally call handleChange on change
+      onChange={(e) => editable && handleChange(row, col, e.target.value)} // Handle change if editable
       className={`w-14 h-14 text-center
         ${conflict ? "bg-red-500" : value ? "bg-gray-300" : "bg-white"}
         focus:outline-none
         ${getBorderClass()}
-        ${isHint ? "bg-yellow-200 transition-all duration-300 ease-in-out" : ""}
+                ${
+                  isHint
+                    ? "bg-yellow-200 transition-all duration-300 ease-in-out"
+                    : ""
+                }
+
       `}
-      disabled={!editable} // Conditionally set the disabled attribute
-      readOnly={!editable} // Conditionally set the readOnly attribute
+      disabled={!editable} // Disable if not editable
     />
   );
 };
 
-export default React.memo(Cell);
+export default Cell;

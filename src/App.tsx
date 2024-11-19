@@ -6,7 +6,9 @@ import { solveSudoku } from "./logic/solver";
 
 const App: React.FC = () => {
   const initializeBoard = () => Array(9).fill(Array(9).fill(0));
+
   const [board, setBoard] = useState<number[][]>(initializeBoard);
+  const [initialBoard, setInitialBoard] = useState<number[][]>(initializeBoard); // Store initial board
   const [difficulty, setDifficulty] = useState<string>("easy");
   const [isValid, setIsValid] = useState<boolean>(true);
 
@@ -37,6 +39,7 @@ const App: React.FC = () => {
   const handleGeneratePuzzle = useCallback(() => {
     const generatedBoard = generateSudokuPuzzle(difficulty);
     setBoard(generatedBoard);
+    setInitialBoard(generatedBoard); // Save generated board as initial board
   }, [difficulty]);
 
   return (
@@ -78,6 +81,7 @@ const App: React.FC = () => {
         board={board}
         handleChange={handleChange}
         solveBoard={solveBoard}
+        initialBoard={initialBoard} // Pass initial board as a prop
       />
     </div>
   );
