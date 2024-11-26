@@ -5,6 +5,8 @@ import { isValidBoard } from "./logic/validation";
 import { generateSudokuPuzzle } from "./logic/puzzleGenerator";
 import { solveSudoku } from "./logic/solver";
 import { handleHint } from "./logic/hintLogic";
+import ResetModal from "./components/dialogs/ResetModal";
+import SuccessModal from "./components/dialogs/SucessModal";
 
 const App: React.FC = () => {
   const initializeBoard = () => Array(9).fill(Array(9).fill(0));
@@ -135,22 +137,10 @@ const onResetBoard = () => {
       )}
 
       {showSuccess && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded shadow-lg text-center">
-            <h2 className="text-2xl font-bold text-green-600 mb-4">
-              🎉 Congratulations!
-            </h2>
-            <p className="text-gray-700">
-              You completed the puzzle in {formattedTime}.
-            </p>
-            <button
-              onClick={() => setShowSuccess(false)}
-              className="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded"
-            >
-              Close
-            </button>
-          </div>
-        </div>
+        <SuccessModal
+          timeElapsed={formattedTime}
+          onClose={() => setShowSuccess(false)}
+        />
       )}
 
       <div className="w-full max-w-4xl flex flex-col md:flex-row justify-between bg-white shadow-md rounded-lg p-6">
@@ -175,31 +165,10 @@ const onResetBoard = () => {
         />
       </div>
       {showResetModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded shadow-lg text-center">
-            <h2 className="text-2xl font-bold text-red-600 mb-4">
-              ⚠️ Reset Confirmation
-            </h2>
-            <p className="text-gray-700">
-              Are you sure you want to reset the board? All progress will be
-              lost.
-            </p>
-            <div className="mt-4 flex justify-center space-x-4">
-              <button
-                onClick={handleResetBoard}
-                className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded"
-              >
-                Yes, Reset
-              </button>
-              <button
-                onClick={() => setShowResetModal(false)}
-                className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
+        <ResetModal
+          onConfirm={handleResetBoard}
+          onCancel={() => setShowResetModal(false)}
+        />
       )}
     </div>
   );
