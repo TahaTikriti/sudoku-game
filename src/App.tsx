@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
 import SudokuBoard from "./components/SudokuBoard";
+import ControlPanel from "./components/ControlPanel";
 import { isValidBoard } from "./logic/validation";
 import { generateSudokuPuzzle } from "./logic/puzzleGenerator";
 import { solveSudoku } from "./logic/solver";
@@ -21,6 +22,7 @@ const App: React.FC = () => {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [progress, setProgress] = useState<number>(0);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showResetModal, setShowResetModal] = useState(false); // Tracks modal visibility
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Timer Control
@@ -94,13 +96,27 @@ const App: React.FC = () => {
   );
 
   const handleSolve = () => {
-    const solvedBoard = solveSudoku(board, setErrorMessage); // Pass the current board and error handler
+    const solvedBoard = solveSudoku(board, setErrorMessage);
 
     if (solvedBoard) {
-      setBoard(solvedBoard); // Update board state with solved board
-      setShowSuccess(true); // Show success message
+      setBoard(solvedBoard);
+      setShowSuccess(true);
     }
   };
+const handleResetBoard = () => {
+  setBoard(initializeBoard()); // Clear the board
+  setInitialBoard(initializeBoard()); // Reset the initial board
+  setErrorMessage(null); // Clear any error messages
+  setHintCell(null); // Clear any hint highlights
+  setHintsLeft(3); // Reset hints
+  setProgress(0); // Reset progress bar
+  setTimeElapsed(0); // Reset timer
+  setShowResetModal(false); // Close the modal
+  stopTimer(); // Stop the timer
+};
+const onResetBoard = () => {
+  setShowResetModal(true); // Show the modal when reset is requested
+};
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
@@ -118,7 +134,6 @@ const App: React.FC = () => {
         </div>
       )}
 
-      {/* Success Message */}
       {showSuccess && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded shadow-lg text-center">
@@ -130,7 +145,7 @@ const App: React.FC = () => {
             </p>
             <button
               onClick={() => setShowSuccess(false)}
-              className="mt-4 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded"
+              className="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded"
             >
               Close
             </button>
@@ -138,72 +153,54 @@ const App: React.FC = () => {
         </div>
       )}
 
-      <div className="flex flex-col md:flex-row bg-white shadow-lg rounded-lg p-6">
-        {/* Sudoku Board */}
+      <div className="w-full max-w-4xl flex flex-col md:flex-row justify-between bg-white shadow-md rounded-lg p-6">
         <SudokuBoard
           board={board}
           handleChange={handleChange}
           initialBoard={initialBoard}
           hintCell={hintCell}
         />
-
-        {/* Control Panel */}
-        <div className="flex flex-col items-center ml-0 md:ml-6 mt-6 md:mt-0 space-y-4">
-          <select
-            value={difficulty}
-            onChange={(e) => setDifficulty(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-          >
-            <option value="easy">Easy</option>
-            <option value="medium">Medium</option>
-            <option value="hard">Hard</option>
-          </select>
-
-          <button
-            onClick={handleGeneratePuzzle}
-            className="w-full p-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg"
-          >
-            Generate Puzzle
-          </button>
-
-          <button
-            onClick={handleSolve}
-            className="w-full p-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg"
-            disabled={!!errorMessage} // Disable if there's an error
-          >
-            Solve Puzzle
-          </button>
-          <button
-            onClick={() =>
-              handleHint(board, hintsLeft, setHintCell, setHintsLeft)
-            }
-            className="w-full p-2 bg-purple-500 hover:bg-purple-600 text-white font-semibold rounded-lg"
-            disabled={hintsLeft === 0 || !!errorMessage} // Disable if no hints or error
-          >
-            Get Hint ({hintsLeft})
-          </button>
-
-          {/* Error Message */}
-          {errorMessage && (
-            <div className="mt-4 text-red-600 font-semibold">
-              <strong>Error:</strong> {errorMessage}
-            </div>
-          )}
-
-          {/* Progress Bar */}
-          <div className="mt-4 w-full max-w-sm">
-            <div className="relative w-full bg-gray-200 rounded h-6">
-              <div
-                className="absolute top-0 left-0 bg-blue-500 h-6 rounded transition-all duration-300"
-                style={{ width: `${progress}%` }}
-              ></div>
-            </div>
-            <div className="text-center text-gray-700 font-semibold mt-1">
-              {progress}% Completed
+        <ControlPanel
+          difficulty={difficulty}
+          setDifficulty={setDifficulty}
+          onGeneratePuzzle={handleGeneratePuzzle}
+          onSolvePuzzle={handleSolve}
+          onGetHint={() =>
+            handleHint(board, hintsLeft, setHintCell, setHintsLeft)
+          }
+          hintsLeft={hintsLeft}
+          errorMessage={errorMessage}
+          progress={progress}
+          onResetBoard={onResetBoard} // Pass reset function
+        />
+      </div>
+      {showResetModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded shadow-lg text-center">
+            <h2 className="text-2xl font-bold text-red-600 mb-4">
+              ⚠️ Reset Confirmation
+            </h2>
+            <p className="text-gray-700">
+              Are you sure you want to reset the board? All progress will be
+              lost.
+            </p>
+            <div className="mt-4 flex justify-center space-x-4">
+              <button
+                onClick={handleResetBoard}
+                className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded"
+              >
+                Yes, Reset
+              </button>
+              <button
+                onClick={() => setShowResetModal(false)}
+                className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded"
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
