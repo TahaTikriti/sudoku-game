@@ -120,7 +120,28 @@ const onResetBoard = () => {
   setShowResetModal(true); // Show the modal when reset is requested
 };
 
-  return (
+// Function to handle image upload
+  const handleUploadImage = (file: File) => {
+      const formData = new FormData();
+      formData.append("image", file);
+  
+      // Send the image to your backend (replace with actual API endpoint)
+      fetch("http://localhost:5000/ocr", {
+        method: "POST",
+        body: formData,
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          // Handle OCR result (display text, etc.)
+          console.log(data.text);
+        })
+        .catch((error) => {
+          setErrorMessage("Error uploading image for OCR");
+          console.error(error);
+        });
+    };
+  
+    return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
       <h1 className="text-4xl font-bold text-gray-800 mb-6">Sudoku Game</h1>
 
@@ -162,6 +183,7 @@ const onResetBoard = () => {
           errorMessage={errorMessage}
           progress={progress}
           onResetBoard={onResetBoard} // Pass reset function
+          onUploadImage={handleUploadImage} // Pass the function
         />
       </div>
       {showResetModal && (

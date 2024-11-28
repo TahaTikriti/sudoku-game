@@ -9,7 +9,8 @@ interface ControlPanelProps {
   hintsLeft: number;
   errorMessage: string | null;
   progress: number;
-  onResetBoard: () => void; // Add this
+  onResetBoard: () => void;
+  onUploadImage: (file: File) => void; // Add this prop to handle file upload
 }
 
 const ControlPanel: React.FC<ControlPanelProps> = ({
@@ -21,8 +22,17 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   hintsLeft,
   errorMessage,
   progress,
-  onResetBoard
+  onResetBoard,
+  onUploadImage, // Use the prop
 }) => {
+  // Handle file input change
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      onUploadImage(file);
+    }
+  };
+
   return (
     <div className="w-full md:w-1/3 flex flex-col items-center space-y-4 p-4 bg-white shadow-md rounded-lg">
       {/* Difficulty Selector */}
@@ -61,13 +71,31 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       >
         Get Hint ({hintsLeft})
       </button>
-      {/*Reset Button*/ }
+
+      {/* Reset Button */}
       <button
         onClick={onResetBoard}
         className="w-full p-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg"
       >
         Reset Board
       </button>
+
+      {/* Upload Image Button */}
+      <div className="w-full">
+        <input
+          type="file"
+          id="upload-image"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="hidden" // Hide the default input style
+        />
+        <label
+          htmlFor="upload-image"
+          className="w-full p-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg cursor-pointer text-center"
+        >
+          Upload Image for OCR
+        </label>
+      </div>
 
       {/* Progress Bar */}
       <div className="w-full">
@@ -81,6 +109,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
           {progress}% Completed
         </div>
       </div>
+
       {/* Error Message */}
       {errorMessage && (
         <div className="text-red-600 font-semibold text-center">

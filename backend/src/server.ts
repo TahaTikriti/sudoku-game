@@ -4,13 +4,23 @@ import { ImageAnnotatorClient } from '@google-cloud/vision';
 import path from 'path';
 import fs from 'fs';
 import { config } from 'dotenv';
+import cors from 'cors';  // Import cors middleware
+
 config(); // This loads environment variables from the .env file
+
 // Initialize express app
 const app = express();
 const upload = multer();
 
 // Initialize the Google Cloud Vision client
 const client = new ImageAnnotatorClient();
+
+// Use CORS middleware to allow cross-origin requests
+app.use(cors({
+  origin: "http://localhost:3000",  // Update this to match your frontend's URL (e.g., React app)
+  methods: ["GET", "POST"], // Allow specific methods (GET, POST)
+  allowedHeaders: ["Content-Type", "Authorization"] // Allowed headers in the request
+}));
 
 // POST route for OCR
 const ocrHandler: RequestHandler = async (req: Request, res: Response): Promise<void> => {
