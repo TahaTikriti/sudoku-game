@@ -81,7 +81,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       </button>
 
       {/* Upload Image Button */}
-      <div className="w-full">
+    
         <input
           type="file"
           id="upload-image"
@@ -95,7 +95,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         >
           Upload Image for OCR
         </label>
-      </div>
+      
 
       {/* Progress Bar */}
       <div className="w-full">
