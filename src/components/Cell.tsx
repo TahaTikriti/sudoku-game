@@ -41,19 +41,33 @@ const Cell: React.FC<{
     return borderClass;
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (editable) {
+      let newValue = e.target.value;
+
+      // Validate the input: only allow values between 1 and 9 or empty string
+      if (
+        newValue === "" ||
+        (parseInt(newValue) >= 1 && parseInt(newValue) <= 9)
+      ) {
+        handleChange(row, col, newValue); // Call the parent's handleChange
+      }
+    }
+  };
+
   return (
     <input
       type="number"
       min="1"
       max="9"
       value={isHint ? hintValue || "" : value || ""}
-      onChange={(e) => editable && handleChange(row, col, e.target.value)} // Handle change if editable
-      className={`min-w-[3rem] max-w-[5rem] h-14 text-center
-  ${conflict ? "bg-red-500" : value ? "bg-gray-300" : "bg-white"}
-  focus:outline-none
-  ${getBorderClass()}
-  ${isHint ? "bg-yellow-200 transition-all duration-300 ease-in-out" : ""}
-`}
+      onChange={handleInputChange} // Handle input change in the cell
+      className={`min-w-[3.5rem] max-w-[5rem] h-14 text-center md:text-center text-2xl font-semibold text-gray-800 
+        ${conflict ? "bg-red-500" : value ? "bg-gray-300" : "bg-white"}
+        focus:outline-none
+        ${getBorderClass()}
+        ${isHint ? "bg-yellow-200 transition-all duration-300 ease-in-out" : ""}
+      `}
       disabled={!editable} // Disable if not editable
     />
   );
