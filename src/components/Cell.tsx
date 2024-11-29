@@ -48,17 +48,12 @@ const Cell: React.FC<{
       max="9"
       value={isHint ? hintValue || "" : value || ""}
       onChange={(e) => editable && handleChange(row, col, e.target.value)} // Handle change if editable
-      className={`w-14 h-14 text-center
-        ${conflict ? "bg-red-500" : value ? "bg-gray-300" : "bg-white"}
-        focus:outline-none
-        ${getBorderClass()}
-                ${
-                  isHint
-                    ? "bg-yellow-200 transition-all duration-300 ease-in-out"
-                    : ""
-                }
-
-      `}
+      className={`min-w-[3rem] max-w-[5rem] h-14 text-center
+  ${conflict ? "bg-red-500" : value ? "bg-gray-300" : "bg-white"}
+  focus:outline-none
+  ${getBorderClass()}
+  ${isHint ? "bg-yellow-200 transition-all duration-300 ease-in-out" : ""}
+`}
       disabled={!editable} // Disable if not editable
     />
   );

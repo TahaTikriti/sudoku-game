@@ -24,7 +24,7 @@ const SudokuBoard: React.FC<SudokuBoardProps> = ({
   }, [board]);
 
   return (
-    <div className="grid grid-cols-9 gap-0 p-4 bg-gray-200 rounded-lg shadow-md">
+    <div className="grid grid-cols-9 gap-0 p-4 bg-gray-200 rounded-lg shadow-md md:w-4/5">
       {board.map((row, rowIndex) =>
         row.map((cell, colIndex) => (
           <Cell
